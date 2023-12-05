@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Регистрация</title>
+</head>
+<body>
+
+<form id="registrationForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+
+    <button type="button" onclick="registerUser()">Register</button>
+</form>
+
+<script>
+    async function registerUser() {
+        const url = "/auth/register";
+
+        const formData = {
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            is_active: true,
+            is_superuser: false,
+            is_verified: false,
+            username: document.getElementById("username").value,
+            role_id: 0
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const responseData = await response.json();
+                console.log(responseData);
+                alert("User registered successfully!");
+            } else {
+                alert("Failed to register user. Please check the provided information.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred while registering the user.");
+        }
+    }
+</script>
+
+</body>
+</html>
