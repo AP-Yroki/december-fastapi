@@ -1,31 +1,65 @@
 {% block title %}
-	<title>Авторизация</title>
+    <title>Авторизация</title>
 {% endblock %}
 
 {% block content %}
-	<div class="container">
-		<h1 class="text-center">Вход в аккаунт</h1>
-		{% if msg %}
-			<div class="alert alert-success" role="success">
-				{{ msg }}
-			</div>
-		{% endif %}
-		{% for error in errors %}
-			<div class="alert alert-danger" role="alert">
-		  		{{ error }}
-			</div>
-		{% endfor %}
+    <div class="container">
+        <h1 class="text-center">Вход в аккаунт</h1>
+        {% if msg %}
+            <div class="alert alert-success" role="success">
+                {{ msg }}
+            </div>
+        {% endif %}
+        {% for error in errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
 
-		<form method="POST">
-  			<div class="mb-3">
-    			<label for="email" class="form-label">Email / Username </label>
-    			<input type="text" required class="form-control" name="text" aria-describedby="emailHelp">
-  			</div>
-  			<div class="mb-3">
-    			<label for="password" class="form-label">Password</label>
-    			<input type="password" required class="form-control" name="password">
-  			</div>
-			<button type="submit" class="btn btn-primary">Login</button>
-		</form>
-	</div>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="text" required class="form-control" id="email" name="email" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" required class="form-control" id="password" name="password">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="loginUser()">Login</button>
+        </form>
+    </div>
+
+    <script>
+        async function loginUser() {
+            const url = "http://127.0.0.1:8000/auth/jwt/login";
+            const formData = new URLSearchParams();
+            formData.append('grant_type', 'password');
+            formData.append('username', document.getElementById("email").value);
+            formData.append('password', document.getElementById("password").value);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    console.log(responseData);
+                    alert("User logged in successfully!");
+                    // Добавьте здесь код для обновления страницы или перенаправления пользователя
+                } else {
+                    const errorText = await response.text();
+                    console.error("Failed to log in. Server response:", errorText);
+                    alert("Failed to log in. Please check the provided information.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while logging in.");
+            }
+        }
+    </script>
 {% endblock %}

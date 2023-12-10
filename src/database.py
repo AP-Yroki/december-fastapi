@@ -11,7 +11,7 @@ from typing import Generator
 from sqlalchemy.orm import sessionmaker
 from auth.models import role
 
-DATABASE_URL = "postgresql+asyncpg://postgres:admin@localhost:5432/postgres1"
+DATABASE_URL = "postgresql+asyncpg://postgres:admin@localhost:5432/postgres2"
 Base: DeclarativeMeta = declarative_base()
 
 
