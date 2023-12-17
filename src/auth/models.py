@@ -1,8 +1,13 @@
 from datetime import datetime
+from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, ForeignKey, JSON, Boolean, Float, Text, Boolean
+from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, ForeignKey, JSON, Boolean
+
 
 metadata = MetaData()
+Base = declarative_base()
+
+
 
 role = Table(
     "role",
@@ -25,3 +30,43 @@ user = Table(
     Column("is_superuser", Boolean, default=False, nullable=False),
     Column("is_verified", Boolean, default=False, nullable=False),
 )
+
+
+
+item = Table(
+    'item',
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("name", String, nullable=False),
+    Column("item_type", String, nullable=False),
+    Column("item_subtype", String, nullable=False),
+    Column("manufacturer", String, nullable=False),
+    Column("characteristics", String, nullable=False),
+    Column("price", Integer, nullable=False),
+    Column("availability", Integer, nullable=False),
+    Column("photo_url", String, nullable=False),
+
+)
+
+# crud/models.py
+from sqlalchemy import Column, Integer, String
+
+
+
+
+
+product = Table(
+    'product',
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("product_name", String, index=True),
+    Column("tech_type", String),
+    Column("tech_variation", String),
+    Column("manufacturer", String),
+    Column("product_characteristics", String),
+    Column("price", Float),
+    Column("availability", Integer),
+    Column("photo_url", String),
+
+)
+
