@@ -3,8 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <title>TEST</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        /* Добавляем пользовательские стили */
+        main {
+            max-width: 800px; /* Максимальная ширина блока контейнера */
+            /*margin: auto; !* Выравниваем блок по центру *!*/
+            margin-left: 200px;
+            margin-right: 100px;
+            padding: 20px; /* Добавляем внутренний отступ */
+        }
+
+        .product__card {
+            margin-bottom: 20px; /* Добавляем отступ между карточками товаров */
+        }
+
+        .card-img-top {
+            max-height: 200px; /* Максимальная высота изображения */
+            object-fit: contain; /* Растягиваем изображение, чтобы оно влезло в рамку */
+        }
+    </style>
 </head>
 <body>
-<h2>Hello, {{ user.username }}!</h2>
+<h2>Здравствуйте, {{ user.username }}!</h2>
+    <main>
+         <a href="/" class="btn btn-primary">Вернуться на главное меню</a>
+        <form id="logoutForm" action="/auth/jwt/logout" method="post">
+            <button type="submit">Выйти из аккаунта</button>
+        </form>
+        {% if products %}
+            <h2 class="productlisttitle">Список товаров:</h2>
+            <div class="row product__list">
+                {% for product in products %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 rounded-3 shadow-sm product__card">
+                            <img src="{{ product.photo_url }}" class="card-img-top img-fluid" alt="{{ product.product_name }}">
+                            <div class="card__body">
+                                <div class="card__header py-3">
+                                    <h4 class="my-0 fw-normal product__name">{{ product.tech_variation }}, {{ product.product_name }} </h4>
+                                </div>
+                                <p class="product__category">Характеристики: {{ product.product_characteristics }}</p>
+                                <div class="product__price-availability">
+                                    <p class="product__price">Цена: {{ product.price }}р.</p>
+                                    <p class="product__availability">Наличие: {{ product.availability }} шт.</p>
+                                </div>
+                                <button type="button" class="btn btn-success btn-block addtocart__btn" onclick="">Добавить в корзину</button>
+                                <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#productModal{{ product.id }}">Подробнее</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="productModal{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="productModalLabel">{{ product.product_name }}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {% if user.role_id == 2 %}
+                                    <p><strong>Id товара:</strong> {{ product.id }}</p>
+                                    {% endif %}
+                                    <p><strong>Тип техники:</strong> {{ product.tech_type }}</p>
+                                    <p><strong>Разновидность техники:</strong> {{ product.tech_variation }}</p>
+                                    <p><strong>Производитель:</strong> {{ product.manufacturer }}</p>
+                                    <p><strong>Характеристики:</strong> {{ product.product_characteristics }}</p>
+                                    <p><strong>Цена:</strong> {{ product.price }}р.</p>
+                                    <p><strong>Наличие:</strong> {{ product.availability }} шт.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                    <button type="button" class="btn btn-warning btn-block" onclick="notifyAvailability({{ product.id }})">Уведомить о наличии</button>
+                                    {% if user.role_id == 2 %} <!-- Проверка роли пользователя -->
+                                    <!-- Кнопки для админа -->
+                                        <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#editModal{{ product.id }}">Изменить</button>
+                                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#deleteModal{{ product.id }}">Удалить</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="editModal{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <!-- Модальное окно для изменения товара -->
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">Изменение товара</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editForm{{ product.id }}" onsubmit="submitEditForm({{ product.id }}); return false;">
+                                    <label>Наименование:</label>
+                                    <input type="text" class="form-control" name="product_name" id="product_name" required>
+                                    <label>Тип техники:</label>
+                                    <input type="text" class="form-control" name="tech_type" id="tech_type" required>
+                                    <label>Разновидность техники:</label>
+                                    <input type="text" class="form-control" name="tech_variation" id="tech_variation" required>
+                                    <label>Производитель:</label>
+                                    <input type="text" class="form-control" name="manufacturer" id="manufacturer" required>
+                                    <label>Характеристики:</label>
+                                    <input type="text" class="form-control" name="product_characteristics" id="product_characteristics" required>
+                                    <label>Цена:</label>
+                                    <input type="text" class="form-control" name="price" id="price" required>
+                                    <label>Наличие:</label>
+                                    <input type="text" class="form-control" name="availability" id="availability" required>
+                                    <!-- Исправленный атрибут id для поля photo_url -->
+                                    <label>URL фото:</label>
+                                    <input type="text" class="form-control" name="photo_url" id="photo_url" required>
+                                    <!-- Продолжайте добавлять поля для редактирования других характеристик товара -->
+                                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <!-- Модальное окно для удаления товара -->
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Удаление товара</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Вы уверены, что хотите удалить товар "{{ product.product_name }}"?</p>
+                                <form id="deleteForm{{ product.id }}" onsubmit="submitDeleteForm({{ product.id }}); return false;">
+                                    <button type="submit" class="btn btn-danger">Удалить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Нет доступных товаров.</p>
+        {% endif %}
+    </main>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!--Изменение товара-->
+    <script>
+        async function submitEditForm(productId) {
+            const url = `http://127.0.0.1:8000/products/update/${productId}`;
+            const formData = {
+                product_name: document.getElementById(`product_name`).value,
+                tech_type: document.getElementById(`tech_type`).value,
+                tech_variation: document.getElementById(`tech_variation`).value,
+                manufacturer: document.getElementById(`manufacturer`).value,
+                product_characteristics: document.getElementById(`product_characteristics`).value,
+                price: parseInt(document.getElementById(`price`).value),
+                availability: parseInt(document.getElementById(`availability`).value),
+                photo_url: document.getElementById(`photo_url`).value,
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    console.log(responseData);
+                    alert("Changes saved successfully!");
+
+                    // Добавьте здесь код для обновления страницы или обновления данных товара
+                    location.reload(); // Пример: обновление всей страницы
+
+                    // Или обновление данных товара на странице без перезагрузки
+                    // Например, если у вас есть JavaScript-функция для обновления данных товара,
+                    // то вызовите ее, передав новые данные товара responseData
+                } else {
+                    const errorText = await response.text();
+                    console.error("Failed to save changes. Server response:", errorText);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+    </script>
+
+<!--Удаление товара-->
+
+    <script>
+        async function submitDeleteForm(productId) {
+            const url = `/products/delete/${productId}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    console.log(responseData);
+                    alert("Product deleted successfully!");
+
+                    // Добавьте здесь код для обновления страницы или удаления данных товара без перезагрузки
+                    // Например, скрытие или удаление соответствующего элемента на странице
+                } else {
+                    const errorText = await response.text();
+                    console.error("Failed to delete product. Server response:", errorText);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+    </script>
+
+    <footer>
+        <p>&copy; 2023 Онлайн магазин</p>
+    </footer>
 </body>
 </html>

@@ -1,18 +1,45 @@
 from datetime import datetime
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Generator
 
 from fastapi import Depends
 from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
-from sqlalchemy import Column, String, Boolean, Integer, TIMESTAMP, ForeignKey
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
-from sqlalchemy.orm import sessionmaker
-from typing import Generator
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, String, Boolean, Integer, TIMESTAMP, ForeignKey, Float
+
+from sqlalchemy.orm import Session
+
+# Correct import assuming `role` is in the same module
 from auth.models import role
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import MetaData, Table, Column, Integer, String, TIMESTAMP, ForeignKey, Float
+from sqlalchemy.ext.declarative import declarative_base
+
 
 DATABASE_URL = "postgresql+asyncpg://postgres:admin@localhost:5432/postgres2"
-Base: DeclarativeMeta = declarative_base()
+
+engine = create_async_engine(DATABASE_URL, echo=True)
+metadata = MetaData()
+Base = declarative_base()
+
+async_session_maker = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+sessionlocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
+async def get_async_session() -> AsyncSession:
+    async with async_session_maker() as session:
+        yield session
+
+
+async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User)
+
+
+async def get_db():
+    db = AsyncSession(engine)
+    try:
+        yield db
+    finally:
+        await db.close()
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
@@ -25,23 +52,3 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_active: bool = Column(Boolean, default=True, nullable=False)
     is_superuser: bool = Column(Boolean, default=False, nullable=False)
     is_verified: bool = Column(Boolean, default=False, nullable=False)
-
-
-engine = create_async_engine(DATABASE_URL)
-async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session
-
-
-async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-    yield SQLAlchemyUserDatabase(session, User)
-
-def get_db() -> Generator:
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()

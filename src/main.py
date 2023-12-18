@@ -1,14 +1,9 @@
-from typing import Union
 from fastapi_users import FastAPIUsers
 from fastapi import Depends, FastAPI, HTTPException, Request, File, UploadFile, \
-    Form
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
-from fastapi.responses import ORJSONResponse
+    Form, status
 
 from auth.base_config import auth_backend
-from database import User
+from database import User, sessionlocal
 from auth.manager import get_user_manager
 from auth.schemas import UserRead, UserCreate
 from redis import asyncio as aioredis
@@ -16,6 +11,10 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from registration.router import router as router_signup
 from homepage.router import router as router_homepage
+from crud.router import router as crud_router
+from fastapi.templating import Jinja2Templates
+
+# from database import SessionLocal
 
 
 
@@ -42,7 +41,7 @@ app.include_router(
 
 app.include_router(router_signup)
 app.include_router(router_homepage)
-
+app.include_router(crud_router)
 
 current_user = fastapi_users.current_user()
 
@@ -58,11 +57,11 @@ async def startup_event():
 
 
 
-@app.get("/protected-route")
-def protected_route(user: User = Depends(current_user)):
-    return f"Hello, {user.username}"
 
+def get_db():
+    db = sessionlocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-@app.get("/unprotected-route")
-def unprotected_route():
-    return f"Hello, anonym"

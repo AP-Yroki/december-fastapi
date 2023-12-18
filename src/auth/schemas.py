@@ -1,6 +1,7 @@
+from fastapi_users import schemas
+from pydantic import BaseModel
 from typing import Optional
 
-from fastapi_users import schemas
 
 
 class UserRead(schemas.BaseUser[int]):
@@ -24,3 +25,28 @@ class UserCreate(schemas.BaseUserCreate):
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
     is_verified: Optional[bool] = False
+
+
+
+
+class ProductBase(BaseModel):
+    product_name: str
+    tech_type: str
+    tech_variation: str
+    manufacturer: str
+    product_characteristics: str
+    price: float
+    availability: int
+    photo_url: Optional[str]
+
+class ProductCreate(ProductBase):
+    pass
+
+class ProductUpdate(ProductBase):
+    pass
+
+class Product(ProductBase):
+    id: int
+
+    class Config:
+        orm_mode = True

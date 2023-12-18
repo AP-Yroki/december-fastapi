@@ -1,0 +1,66 @@
+/* Общие стили */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    max-width: 960px;
+}
+
+/* Шапка */
+header {
+    padding: 20px 0;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #212529;
+    font-size: 18px;
+}
+
+/* Главная секция */
+main {
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Форма регистрации */
+.form-signup {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form-signup h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.form-floating {
+    margin-bottom: 15px;
+}
+
+/* Подвал */
+footer {
+    margin-top: 40px;
+    padding: 10px 0;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 767px) {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .navbar a {
+        margin: 10px 0;
+    }
+}
