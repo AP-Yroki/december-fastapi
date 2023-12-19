@@ -1,6 +1,9 @@
+from typing import List
+
 from fastapi_users import FastAPIUsers
 from fastapi import Depends, FastAPI, HTTPException, Request, File, UploadFile, \
     Form, status
+from pydantic import BaseModel
 
 from auth.base_config import auth_backend
 from database import User, sessionlocal
@@ -54,9 +57,6 @@ async def startup_event():
     redis = aioredis.from_url("redis://localhost", encoding="utf8",
                               decode_responses=True)
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
-
-
-
 
 def get_db():
     db = sessionlocal()

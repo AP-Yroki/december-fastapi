@@ -26,6 +26,10 @@
 </head>
 <body>
 <h2>Здравствуйте, {{ user.username }}!</h2>
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Поиск по типу техники или названию">
+    <button onclick="search()">Искать</button>
+</div>
     <main>
          <a href="/" class="btn btn-primary">Вернуться на главное меню</a>
         <form id="logoutForm" action="/auth/jwt/logout" method="post">
@@ -34,6 +38,8 @@
         {% if products %}
             <h2 class="productlisttitle">Список товаров:</h2>
             <div class="row product__list">
+
+
                 {% for product in products %}
                     <div class="col-md-4">
                         <div class="card mb-4 rounded-3 shadow-sm product__card">
@@ -144,6 +150,9 @@
         {% else %}
             <p>Нет доступных товаров.</p>
         {% endif %}
+        <div id="searchResults">
+            <!-- Здесь будут отображаться результаты поиска -->
+        </div>
     </main>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -225,7 +234,28 @@
             }
         }
     </script>
+<!--Поиск товаров-->
+    <script>
+        function search() {
+            var searchInput = document.getElementById("searchInput").value.toLowerCase();
+            var productList = document.getElementById("productList");
+            var searchResults = document.getElementById("searchResults");
 
+            // Очистим предыдущие результаты поиска
+            searchResults.innerHTML = "";
+
+            // Проходим по товарам и ищем совпадения
+            for (var i = 0; i < productList.children.length; i++) {
+                var product = productList.children[i].innerText.toLowerCase();
+                if (product.includes(searchInput)) {
+                    // Если найдено совпадение, добавляем в результаты поиска
+                    var resultItem = document.createElement("p");
+                    resultItem.innerText = product;
+                    searchResults.appendChild(resultItem);
+                }
+            }
+        }
+    </script>
     <footer>
         <p>&copy; 2023 Онлайн магазин</p>
     </footer>
