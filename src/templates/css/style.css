@@ -1,66 +1,28 @@
-/* Общие стили */
-body {
-    font-family: 'Arial', sans-serif;
-}
 
-.container {
-    max-width: 960px;
-}
-
-/* Шапка */
-header {
-    padding: 20px 0;
-}
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.navbar a {
-    margin-right: 15px;
-    text-decoration: none;
-    color: #212529;
-    font-size: 18px;
-}
-
-/* Главная секция */
+/* Добавляем пользовательские стили */
 main {
-    text-align: center;
-    margin-top: 40px;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
 }
-
-/* Форма регистрации */
-.form-signup {
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-.form-signup h1 {
-    font-size: 24px;
+.product__card {
     margin-bottom: 20px;
 }
-
-.form-floating {
-    margin-bottom: 15px;
+.card-img-top {
+    max-height: 200px;
+    object-fit: contain;
 }
-
-/* Подвал */
-footer {
-    margin-top: 40px;
-    padding: 10px 0;
-    border-top: 1px solid #dee2e6;
+/* Новые стили для корзины */
+#cartItemList li {
+    margin-bottom: 10px;
+    list-style: none;
+    padding-left: 0;
 }
-
-/* Медиа-запросы для адаптивности */
-@media (max-width: 767px) {
-    .navbar {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .navbar a {
-        margin: 10px 0;
-    }
+#cartModal .modal-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+/* Стили для кнопок в корзине */
+#cartModal .modal-body button {
+    margin-right: 10px;
 }

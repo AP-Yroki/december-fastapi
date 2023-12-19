@@ -4,60 +4,122 @@
     <meta charset="UTF-8">
     <title>TEST</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
     <style>
-        /* Добавляем пользовательские стили */
-        main {
-            max-width: 800px; /* Максимальная ширина блока контейнера */
-            /*margin: auto; !* Выравниваем блок по центру *!*/
-            margin-left: 200px;
-            margin-right: 100px;
-            padding: 20px; /* Добавляем внутренний отступ */
+            .container {
+            margin-right: auto;
+            margin-left: auto;
         }
 
+
         .product__card {
-            margin-bottom: 20px; /* Добавляем отступ между карточками товаров */
+            margin-bottom: 20px;
+            margin-right: 20px; /* Добавьте отступ справа */
+            margin-left: 20px; /* Добавьте отступ слева */
+        }
+        body {
+
+            font-family: 'Arial', sans-serif;
+        }
+
+        .header-line {
+            border-bottom: 1px solid #ddd;
         }
 
         .card-img-top {
-            max-height: 200px; /* Максимальная высота изображения */
-            object-fit: contain; /* Растягиваем изображение, чтобы оно влезло в рамку */
+            max-height: 200px;
+            object-fit: contain;
         }
+
+        /* Новые стили для корзины */
+        #cartItemList li {
+            margin-bottom: 10px;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        #cartModal .modal-body {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Стили для кнопок в корзине */
+        #cartModal .modal-body button {
+            margin-right: 10px;
+        }
+
+        .online_icn{
+            margin-right: 200px;
+        }
+
     </style>
 </head>
 <body>
-<h2>Здравствуйте, {{ user.username }}!</h2>
-<div class="search-container">
-    <input type="text" id="searchInput" placeholder="Поиск по типу техники или названию">
-    <button onclick="search()">Искать</button>
-</div>
-    <main>
-         <a href="/" class="btn btn-primary">Вернуться на главное меню</a>
-        <form id="logoutForm" action="/auth/jwt/logout" method="post">
-            <button type="submit">Выйти из аккаунта</button>
+    <div class="header-line">
+        <nav class="navbar navbar-expand-md">
+            <div class="container">
+                <ul class="navbar-nav d-inline-flex   ms-md-auto">
+                    <a href="/" class="navbar-brand d-flex align-items-center text-dark text-decoration-none">
+                        <span class="fs-4 mr-5">«OnlineShop»</span>
+                    </a>
+                    <p class="nav-link me-3 text-dark text-decoration-none mt-3 mr-3">Здравствуйте, {{ user.username }}!</p>
+                    <li class="nav-item">
+                        <a href="/" class="nav-link me-3 text-dark text-decoration-none mt-3">Вернуться на главное меню</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link me-3 text-dark text-decoration-none mt-3" data-toggle="modal" data-target="#cartModal">Корзина</a>
+                    </li>
+                    <a type="button" class="nav-link me-3 text-dark text-decoration-none mt-3" data-toggle="modal" data-target="#myOrdersModal">Мои заказы</a>
+                    {% if user.role_id == 2 %}
+                    <li class="nav-item">
+                        <a href="#" class="nav-link me-3 text-dark text-decoration-none mt-3" data-toggle="modal" data-target="#addModal">Добавить товар</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <form id="logoutForm" class="me-3 text-dark text-decoration-none mt-3" action="/auth/jwt/logout" method="post">
+                            <button type="submit" class="btn btn-link">Выйти из аккаунта</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div class="container mt-3">
+        <form class="text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="text-to-find" placeholder="Поиск" autofocus>
+                        <button class="btn btn-primary" type="submit" onclick="javascript: FindOnPage('text-to-find',true); return false;">Начать поиск</button>
+                    </div>
+                </div>
+            </div>
         </form>
+    </div>
+
+
+
         {% if products %}
-            <h2 class="productlisttitle">Список товаров:</h2>
-            <div class="row product__list">
-
-
+            <h2 class="productlisttitle d-flex justify-content-center text-center mt-4">Каталог товаров</h2>
+            <div class="row product__list m-5">
                 {% for product in products %}
-                    <div class="col-md-4">
-                        <div class="card mb-4 rounded-3 shadow-sm product__card">
-                            <img src="{{ product.photo_url }}" class="card-img-top img-fluid" alt="{{ product.product_name }}">
-                            <div class="card__body">
-                                <div class="card__header py-3">
-                                    <h4 class="my-0 fw-normal product__name">{{ product.tech_variation }}, {{ product.product_name }} </h4>
+                <div class="col-md-4">
+                            <div class="card mb-4 rounded-3 shadow-sm product__card">
+                                <img src="{{ product.photo_url }}" class="card-img-top img-fluid" alt="{{ product.product_name }}">
+                                <div class="card__body">
+                                    <div class="card__header py-3">
+                                        <h4 class="my-0 fw-normal product__name">{{ product.tech_variation }}, {{ product.product_name }} </h4>
+                                    </div>
+                                    <p class="product__category">Характеристики: {{ product.product_characteristics }}</p>
+                                    <div class="product__price-availability">
+                                        <p class="product__price">Цена: {{ product.price }}р.</p>
+                                        <p class="product__availability">Наличие: {{ product.availability }} шт.</p>
+                                    </div>
+                                    <button type="button" class="btn btn-success btn-block addtocart__btn" onclick="addToCart('{{ product.id }}', '{{ product.product_name }}', '{{ product.price }}')">Добавить в корзину</button>
+                                    <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#productModal{{ product.id }}">Подробнее</button>
                                 </div>
-                                <p class="product__category">Характеристики: {{ product.product_characteristics }}</p>
-                                <div class="product__price-availability">
-                                    <p class="product__price">Цена: {{ product.price }}р.</p>
-                                    <p class="product__availability">Наличие: {{ product.availability }} шт.</p>
-                                </div>
-                                <button type="button" class="btn btn-success btn-block addtocart__btn" onclick="">Добавить в корзину</button>
-                                <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#productModal{{ product.id }}">Подробнее</button>
                             </div>
                         </div>
-                    </div>
                     <div class="modal fade" id="productModal{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -126,6 +188,42 @@
                         </div>
                     </div>
                 </div>
+                <!-- Модальное окно для добавления товара -->
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addModalLabel">Добавление товара</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="addForm" onsubmit="submitAddForm(); return false;">
+                                    <label>Наименование:</label>
+                                    <input type="text" class="form-control" name="product_name" id="add_product_name" required>
+                                    <label>Тип техники:</label>
+                                    <input type="text" class="form-control" name="tech_type" id="add_tech_type" required>
+                                    <label>Разновидность техники:</label>
+                                    <input type="text" class="form-control" name="tech_variation" id="add_tech_variation" required>
+                                    <label>Производитель:</label>
+                                    <input type="text" class="form-control" name="manufacturer" id="add_manufacturer" required>
+                                    <label>Характеристики:</label>
+                                    <input type="text" class="form-control" name="product_characteristics" id="add_product_characteristics" required>
+                                    <label>Цена:</label>
+                                    <input type="text" class="form-control" name="price" id="add_price" required>
+                                    <label>Наличие:</label>
+                                    <input type="text" class="form-control" name="availability" id="add_availability" required>
+                                    <!-- Исправленный атрибут id для поля photo_url -->
+                                    <label>URL фото:</label>
+                                    <input type="text" class="form-control" name="photo_url" id="add_photo_url" required>
+                                    <!-- Продолжайте добавлять поля для редактирования других характеристик товара -->
+                                    <button type="submit" class="btn btn-primary">Добавить товар</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                     <!-- Модальное окно для удаления товара -->
                     <div class="modal-dialog" role="document">
@@ -150,10 +248,52 @@
         {% else %}
             <p>Нет доступных товаров.</p>
         {% endif %}
-        <div id="searchResults">
-            <!-- Здесь будут отображаться результаты поиска -->
-        </div>
+        <div id="searchResults"></div>
     </main>
+    <!-- Модальное окно корзины -->
+    <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Корзина товаров</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul id="cartItemList"></ul>
+                    <button type="button" class="btn btn-danger" onclick="clearCart()">Очистить корзину</button>
+                    <button type="button" class="btn btn-success" onclick="placeOrderAndMoveToOrders()">Заказать товар</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Модальное окно для "Мои заказы" -->
+    <div class="modal fade" id="myOrdersModal" tabindex="-1" role="dialog" aria-labelledby="myOrdersModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myOrdersModalLabel">Мои заказы</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Здесь будет отображаться список товаров в заказах -->
+                    <ul id="myOrdersList" class="list-group">
+                        <!-- Элементы из корзины будут перемещаться сюда -->
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -204,6 +344,53 @@
         }
     </script>
 
+<!--Добавление товара-->
+<script>
+    async function submitAddForm() {
+        const url = 'http://127.0.0.1:8000/products/create';
+        const formData = {
+            product_name: document.getElementById('add_product_name').value,
+            tech_type: document.getElementById('add_tech_type').value,
+            tech_variation: document.getElementById('add_tech_variation').value,
+            manufacturer: document.getElementById('add_manufacturer').value,
+            product_characteristics: document.getElementById('add_product_characteristics').value,
+            price: parseInt(document.getElementById('add_price').value),
+            availability: parseInt(document.getElementById('add_availability').value),
+            photo_url: document.getElementById('add_photo_url').value,
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                const responseData = await response.json();
+                console.log(responseData);
+                alert('Product added successfully!');
+
+                // Добавьте здесь код для обновления страницы или обновления данных товара
+                location.reload(); // Пример: обновление всей страницы
+
+                // Или обновление данных товара на странице без перезагрузки
+                // Например, если у вас есть JavaScript-функция для обновления данных товара,
+                // то вызовите ее, передав новые данные товара responseData
+            } else {
+                const errorText = await response.text();
+                console.error('Failed to add product. Server response:', errorText);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+</script>
+
+
 <!--Удаление товара-->
 
     <script>
@@ -235,27 +422,157 @@
         }
     </script>
 <!--Поиск товаров-->
-    <script>
-        function search() {
-            var searchInput = document.getElementById("searchInput").value.toLowerCase();
-            var productList = document.getElementById("productList");
-            var searchResults = document.getElementById("searchResults");
+    <script type="text/javascript">
+        var input, search, pr, result, result_arr, locale_HTML, result_store, currentIndex;
 
-            // Очистим предыдущие результаты поиска
-            searchResults.innerHTML = "";
+        locale_HTML = document.body.innerHTML;   // сохраняем в переменную весь body (Исходный)
+        currentIndex = -1;
 
-            // Проходим по товарам и ищем совпадения
-            for (var i = 0; i < productList.children.length; i++) {
-                var product = productList.children[i].innerText.toLowerCase();
-                if (product.includes(searchInput)) {
-                    // Если найдено совпадение, добавляем в результаты поиска
-                    var resultItem = document.createElement("p");
-                    resultItem.innerText = product;
-                    searchResults.appendChild(resultItem);
+        function TrimStr(s) {
+            s = s.replace(/^\s+/g, '');
+            return s.replace(/\s+$/g, '');
+        }
+
+        function FindOnPage(name, status) {
+            currentIndex = -1; // Сбрасываем индекс текущего найденного элемента
+
+            input = document.getElementById(name).value; //получаем значение из поля в html
+
+            if (input.length < 3 && status == true) {
+                alert('Для поиска вы должны ввести три или более символов');
+                function FindOnPageBack() { document.body.innerHTML = locale_HTML; }   //обнуляем стили
+            }
+
+            if (input.length >= 3) {
+                function FindOnPageGo() {
+                    search = '/' + input + '/g';  //делаем из строки регулярное выражение
+                    pr = document.body.innerHTML;   // сохраняем в переменную весь body
+                    result = pr.match(/>(.*?)</g);  //отсекаем все теги и получаем только текст
+                    result_arr = [];   //в этом массиве будем хранить результат работы (подсветку)
+
+                    for (var i = 0; i < result.length; i++) {
+                        result_arr[i] = result[i].replace(eval(search), '<span style="background-color:yellow;">' + input + '</span>'); //находим нужные элементы, задаем стиль и сохраняем в новый массив
+                    }
+                    for (var i = 0; i < result.length; i++) {
+                        pr = pr.replace(result[i], result_arr[i])  //заменяем в переменной с html текст на новый из новогом ассива
+                    }
+                    document.body.innerHTML = pr;  //заменяем html код
+                    FindNext();
                 }
+            }
+            function FindOnPageBack() { document.body.innerHTML = locale_HTML; }   //обнуляем стили
+            if (status) { FindOnPageBack(); FindOnPageGo(); } //чистим прошлое и Выделяем найденное
+            if (!status) { FindOnPageBack(); } //Снимаем выделение
+        }
+
+        function FindNext() {
+            var spans = document.querySelectorAll('span[style="background-color:yellow;"]');
+            if (spans.length > 0) {
+                currentIndex = (currentIndex + 1) % spans.length;
+                spans[currentIndex].scrollIntoView({ behavior: "smooth" });
+            }
+        }
+
+        function ResetSearch() {
+            document.body.innerHTML = locale_HTML;
+            currentIndex = -1;
+        }
+    </script>
+    <!--Корзина-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // При загрузке страницы восстанавливаем данные корзины из localStorage
+            loadCartFromStorage();
+        });
+
+        function addToCart(productId, productName, productPrice) {
+            const cartItemList = document.getElementById('cartItemList');
+            const listItem = document.createElement('li');
+            listItem.textContent = `${productName} - ${productPrice}р.`;
+            cartItemList.appendChild(listItem);
+
+            // Добавляем данные в корзину и сохраняем их в localStorage
+            saveCartToStorage();
+        }
+
+        function saveCartToStorage() {
+            const cartItemList = document.getElementById('cartItemList');
+            const cartItems = Array.from(cartItemList.children).map(item => item.textContent);
+
+            // Сохраняем данные корзины в localStorage
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        }
+
+        function removeFromCart(productId) {
+            const cartItemList = document.getElementById('cartItemList');
+            const items = Array.from(cartItemList.children);
+
+            // Находим элемент с productId и удаляем его
+            const itemToRemove = items.find(item => item.dataset.productId === productId);
+            if (itemToRemove) {
+                cartItemList.removeChild(itemToRemove);
+                saveCartToStorage(); // Сохраняем обновленную корзину в localStorage
+            }
+        }
+
+        function clearCart() {
+            const cartItemList = document.getElementById('cartItemList');
+            cartItemList.innerHTML = ''; // Очищаем содержимое корзины
+            saveCartToStorage(); // Сохраняем обновленную корзину в localStorage
+        }
+
+        function placeOrderAndMoveToOrders() {
+            // Реализуйте логику для отправки заказа на сервер или другие необходимые действия
+            alert('Ваш заказ размещен!');
+
+            // Перемещаем товары из корзины в список "Мои заказы"
+            moveCartItemsToOrders();
+
+            // Очищаем корзину
+            clearCart();
+        }
+
+        function moveCartItemsToOrders() {
+            const cartItemList = document.getElementById('cartItemList');
+            const myOrdersList = document.getElementById('myOrdersList');
+
+            // Перебираем все элементы корзины и перемещаем их в список "Мои заказы"
+            Array.from(cartItemList.children).forEach(item => {
+                const orderItem = document.createElement('li');
+                orderItem.textContent = item.textContent;
+                myOrdersList.appendChild(orderItem);
+            });
+        }
+        function loadCartFromStorage() {
+            const cartItemList = document.getElementById('cartItemList');
+            const savedCartItems = localStorage.getItem('cartItems');
+
+            if (savedCartItems) {
+                const parsedCartItems = JSON.parse(savedCartItems);
+                parsedCartItems.forEach(itemText => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = itemText;
+                    cartItemList.appendChild(listItem);
+                });
             }
         }
     </script>
+
+<!--  Мои заказы  -->
+    <script>
+        function moveCartItemToOrders(itemId) {
+            // Находим элемент корзины по его ID
+            var cartItem = document.getElementById(itemId);
+
+            // Перемещаем элемент в список "Мои заказы"
+            var myOrdersList = document.getElementById('myOrdersList');
+            myOrdersList.appendChild(cartItem.cloneNode(true));
+
+            // Опционально: Удаляем элемент из списка корзины
+            // cartItem.parentNode.removeChild(cartItem);
+        }
+    </script>
+
     <footer>
         <p>&copy; 2023 Онлайн магазин</p>
     </footer>

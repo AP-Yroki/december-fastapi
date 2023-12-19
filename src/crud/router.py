@@ -8,7 +8,7 @@ from .crud import create_product, get_products, get_product, update_product, \
 
 router = APIRouter()
 
-@router.post("/products/", response_model=ProductCreate)
+@router.post("/products/create", response_model=ProductCreate)
 async def create_product_route(product_create: ProductCreate, db: AsyncSession = Depends(get_async_session)):
     return await create_product(db=db, product_create=product_create)
 

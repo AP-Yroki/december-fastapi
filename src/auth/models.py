@@ -85,5 +85,15 @@ notified_users = Table(
     Column("id", Integer, primary_key=True),
     Column("user_id", Integer, ForeignKey('user.id')),
     Column("product_id", Integer, ForeignKey('product.id')),
-    # Добавьте другие необходимые поля
+
+)
+
+
+order = Table(
+    'order',
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("order_name", String),
+    Column("status", String),
+
 )
