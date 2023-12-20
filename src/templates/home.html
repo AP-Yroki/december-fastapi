@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>TEST</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/style.css">
     <style>
             .container {
             margin-right: auto;
@@ -67,7 +66,7 @@
                         <a href="/" class="nav-link me-3 text-dark text-decoration-none mt-3">Вернуться на главное меню</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link me-3 text-dark text-decoration-none mt-3" data-toggle="modal" data-target="#cartModal">Корзина</a>
+                        <a  class="nav-link me-3 text-dark text-decoration-none mt-3" data-toggle="modal" data-target="#cartModal">Корзина</a>
                     </li>
                     <a type="button" class="nav-link me-3 text-dark text-decoration-none mt-3" data-toggle="modal" data-target="#myOrdersModal">Мои заказы</a>
                     {% if user.role_id == 2 %}
@@ -77,9 +76,10 @@
                     {% endif %}
                     <li class="nav-item">
                         <form id="logoutForm" class="me-3 text-dark text-decoration-none mt-3" action="/auth/jwt/logout" method="post">
-                            <button type="submit" class="btn btn-link">Выйти из аккаунта</button>
+                            <button type="submit" formaction="/auth/jwt/logout" class="btn btn-link">Выйти из аккаунта</button>
                         </form>
                     </li>
+
                 </ul>
             </div>
         </nav>
@@ -142,7 +142,6 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                                    <button type="button" class="btn btn-warning btn-block" onclick="notifyAvailability({{ product.id }})">Уведомить о наличии</button>
                                     {% if user.role_id == 2 %} <!-- Проверка роли пользователя -->
                                     <!-- Кнопки для админа -->
                                         <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#editModal{{ product.id }}">Изменить</button>
@@ -175,9 +174,9 @@
                                     <label>Характеристики:</label>
                                     <input type="text" class="form-control" name="product_characteristics" id="product_characteristics" required>
                                     <label>Цена:</label>
-                                    <input type="text" class="form-control" name="price" id="price" required>
+                                    <input type="number" class="form-control" name="price" id="price" required>
                                     <label>Наличие:</label>
-                                    <input type="text" class="form-control" name="availability" id="availability" required>
+                                    <input type="number" class="form-control" name="availability" id="availability" required>
                                     <!-- Исправленный атрибут id для поля photo_url -->
                                     <label>URL фото:</label>
                                     <input type="text" class="form-control" name="photo_url" id="photo_url" required>
@@ -272,7 +271,8 @@
         </div>
     </div>
 
-        <!-- Модальное окно для "Мои заказы" -->
+
+    <!-- Модальное окно "Мои заказы" -->
     <div class="modal fade" id="myOrdersModal" tabindex="-1" role="dialog" aria-labelledby="myOrdersModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -283,10 +283,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Здесь будет отображаться список товаров в заказах -->
-                    <ul id="myOrdersList" class="list-group">
-                        <!-- Элементы из корзины будут перемещаться сюда -->
-                    </ul>
+                    <ul id="myOrdersList"></ul>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -294,23 +291,24 @@
             </div>
         </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-<!--Изменение товара-->
+    <!--Изменение товара-->
     <script>
         async function submitEditForm(productId) {
-            const url = `http://127.0.0.1:8000/products/update/${productId}`;
+            const url = http://127.0.0.1:8000/products/update/${productId};
             const formData = {
-                product_name: document.getElementById(`product_name`).value,
-                tech_type: document.getElementById(`tech_type`).value,
-                tech_variation: document.getElementById(`tech_variation`).value,
-                manufacturer: document.getElementById(`manufacturer`).value,
-                product_characteristics: document.getElementById(`product_characteristics`).value,
-                price: parseInt(document.getElementById(`price`).value),
-                availability: parseInt(document.getElementById(`availability`).value),
-                photo_url: document.getElementById(`photo_url`).value,
+                product_name: document.getElementById('product_name').value,
+                tech_type: document.getElementById('tech_type').value,
+                tech_variation: document.getElementById('tech_variation').value,
+                manufacturer: document.getElementById('manufacturer').value,
+                product_characteristics: document.getElementById('product_characteristics').value,
+                price: parseFloat(document.getElementById('price').value),
+                availability: parseInt(document.getElementById('availability').value),
+                photo_url: document.getElementById('photo_url').value,
             };
 
             try {
@@ -326,14 +324,8 @@
                 if (response.ok) {
                     const responseData = await response.json();
                     console.log(responseData);
-                    alert("Changes saved successfully!");
-
-                    // Добавьте здесь код для обновления страницы или обновления данных товара
+                    alert("Изменения успешно сохранены!");
                     location.reload(); // Пример: обновление всей страницы
-
-                    // Или обновление данных товара на странице без перезагрузки
-                    // Например, если у вас есть JavaScript-функция для обновления данных товара,
-                    // то вызовите ее, передав новые данные товара responseData
                 } else {
                     const errorText = await response.text();
                     console.error("Failed to save changes. Server response:", errorText);
@@ -372,7 +364,7 @@
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(responseData);
-                alert('Product added successfully!');
+                alert('Товар успешно добавлен!');
 
                 // Добавьте здесь код для обновления страницы или обновления данных товара
                 location.reload(); // Пример: обновление всей страницы
@@ -408,7 +400,7 @@
                 if (response.ok) {
                     const responseData = await response.json();
                     console.log(responseData);
-                    alert("Product deleted successfully!");
+                    alert("Товар удалён успешно!");
 
                     // Добавьте здесь код для обновления страницы или удаления данных товара без перезагрузки
                     // Например, скрытие или удаление соответствующего элемента на странице
@@ -481,7 +473,6 @@
     <!--Корзина-->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // При загрузке страницы восстанавливаем данные корзины из localStorage
             loadCartFromStorage();
         });
 
@@ -491,7 +482,6 @@
             listItem.textContent = `${productName} - ${productPrice}р.`;
             cartItemList.appendChild(listItem);
 
-            // Добавляем данные в корзину и сохраняем их в localStorage
             saveCartToStorage();
         }
 
@@ -499,7 +489,6 @@
             const cartItemList = document.getElementById('cartItemList');
             const cartItems = Array.from(cartItemList.children).map(item => item.textContent);
 
-            // Сохраняем данные корзины в localStorage
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
         }
 
@@ -507,28 +496,22 @@
             const cartItemList = document.getElementById('cartItemList');
             const items = Array.from(cartItemList.children);
 
-            // Находим элемент с productId и удаляем его
             const itemToRemove = items.find(item => item.dataset.productId === productId);
             if (itemToRemove) {
                 cartItemList.removeChild(itemToRemove);
-                saveCartToStorage(); // Сохраняем обновленную корзину в localStorage
+                saveCartToStorage();
             }
         }
 
         function clearCart() {
             const cartItemList = document.getElementById('cartItemList');
-            cartItemList.innerHTML = ''; // Очищаем содержимое корзины
-            saveCartToStorage(); // Сохраняем обновленную корзину в localStorage
+            cartItemList.innerHTML = '';
+            saveCartToStorage();
         }
 
         function placeOrderAndMoveToOrders() {
-            // Реализуйте логику для отправки заказа на сервер или другие необходимые действия
             alert('Ваш заказ размещен!');
-
-            // Перемещаем товары из корзины в список "Мои заказы"
             moveCartItemsToOrders();
-
-            // Очищаем корзину
             clearCart();
         }
 
@@ -536,13 +519,13 @@
             const cartItemList = document.getElementById('cartItemList');
             const myOrdersList = document.getElementById('myOrdersList');
 
-            // Перебираем все элементы корзины и перемещаем их в список "Мои заказы"
             Array.from(cartItemList.children).forEach(item => {
                 const orderItem = document.createElement('li');
                 orderItem.textContent = item.textContent;
                 myOrdersList.appendChild(orderItem);
             });
         }
+
         function loadCartFromStorage() {
             const cartItemList = document.getElementById('cartItemList');
             const savedCartItems = localStorage.getItem('cartItems');
@@ -560,18 +543,96 @@
 
 <!--  Мои заказы  -->
     <script>
-        function moveCartItemToOrders(itemId) {
-            // Находим элемент корзины по его ID
-            var cartItem = document.getElementById(itemId);
+        document.addEventListener('DOMContentLoaded', function () {
+            loadOrdersFromStorage();
+        });
 
-            // Перемещаем элемент в список "Мои заказы"
-            var myOrdersList = document.getElementById('myOrdersList');
-            myOrdersList.appendChild(cartItem.cloneNode(true));
+        function placeOrderAndMoveToOrders() {
+            alert('Ваш заказ размещен!');
+            moveCartItemsToOrders();
+            clearCart();
+        }
 
-            // Опционально: Удаляем элемент из списка корзины
-            // cartItem.parentNode.removeChild(cartItem);
+        function moveCartItemsToOrders() {
+            const cartItemList = document.getElementById('cartItemList');
+            const myOrdersList = document.getElementById('myOrdersList');
+
+            Array.from(cartItemList.children).forEach(item => {
+                const orderItem = document.createElement('li');
+                const itemId = Math.floor(Math.random() * 1000); // Генерируем уникальный идентификатор для каждого товара
+                const statusSelector = `
+                    <select class="form-select form-select-sm" id="status-${itemId}" disabled>
+                        <option value="В пути">В пути</option>
+                        <option value="На пункте выдачи">На пункте выдачи</option>
+                        <option value="Ожидает">Ожидает</option>
+                    </select>
+                `;
+                orderItem.innerHTML = `
+                    <span id="item-${itemId}">${item.textContent} - Статус: ${statusSelector}</span>
+                    {% if user.role_id == 2 %}
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="editOrderStatus('${itemId}')">Изменить</button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteOrder('${itemId}')">Удалить</button>
+                    {% endif %}
+                `;
+                myOrdersList.appendChild(orderItem);
+            });
+
+            saveOrderToStorage(); // Сохраняем информацию о заказе в localStorage
+        }
+
+        function saveOrderToStorage() {
+            const myOrdersList = document.getElementById('myOrdersList');
+            const orderItems = Array.from(myOrdersList.children).map(item => item.innerHTML);
+
+            localStorage.setItem('myOrders', JSON.stringify(orderItems));
+        }
+
+        function loadOrdersFromStorage() {
+            const myOrdersList = document.getElementById('myOrdersList');
+            const savedOrders = localStorage.getItem('myOrders');
+
+            if (savedOrders) {
+                const parsedOrders = JSON.parse(savedOrders);
+                parsedOrders.forEach(orderText => {
+                    const orderItem = document.createElement('li');
+                    orderItem.innerHTML = orderText;
+                    myOrdersList.appendChild(orderItem);
+                });
+            }
+        }
+
+        function editOrderStatus(itemId) {
+            const orderItem = document.getElementById(itemId);
+            const statusSelector = orderItem.querySelector('select');
+            statusSelector.removeAttribute('disabled');
+            const editButton = orderItem.querySelector('.btn-outline-primary');
+            editButton.setAttribute('onclick', `updateOrderStatus('${itemId}')`);
+        }
+
+        function updateOrderStatus(itemId) {
+            const orderItem = document.getElementById(itemId);
+            const spanElement = orderItem.querySelector('span');
+            const statusSelector = spanElement.querySelector('select');
+            const newStatus = statusSelector.value;
+            spanElement.innerHTML = `Товар - Статус: ${newStatus}`;
+            statusSelector.setAttribute('disabled', 'disabled');
+            const editButton = orderItem.querySelector('.btn-outline-primary');
+            editButton.setAttribute('onclick', `editOrderStatus('${itemId}')`);
+            saveOrderToStorage(); // Сохраняем обновленную информацию о заказе в localStorage
+        }
+
+        function deleteOrder(itemId) {
+            const orderItem = document.getElementById(itemId);
+            orderItem.remove();
+            saveOrderToStorage(); // Сохраняем обновленную информацию о заказе в localStorage
         }
     </script>
+
+
+
+
+
+
 
     <footer>
         <p>&copy; 2023 Онлайн магазин</p>

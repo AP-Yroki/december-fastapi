@@ -56,23 +56,25 @@
 </head>
 <body>
          <a href="/" class="btn btn-primary">Вернуться на главное меню</a>
+
 <form id="registrationForm" action="/account/login" method="get">
-    <label for="username">Username:</label>
+                 <h1 class="text-center">Регистрация</h1>
+    <label for="username">Имя пользователя:</label>
     <input type="text" id="username" name="username" required>
 
-    <label for="email">Email:</label>
+    <label for="email">Почта:</label>
     <input type="email" id="email" name="email" required>
 
 <!--    <label for="phone">Phone:</label>-->
 <!--    <input type="text" id="phone" name="phone" required>-->
 
-    <label for="password">Password:</label>
+    <label for="password">Пароль:</label>
     <input type="password" id="password" name="password" required>
 
-    <label for="confirmPassword">Confirm Password:</label>
+    <label for="confirmPassword">Подтвердите Пароль:</label>
     <input type="password" id="confirmPassword" name="confirmPassword" required>
 
-    <button type="button" onclick="registerUser()">Register</button>
+    <button type="button" onclick="registerUser()">Регистрация</button>
 </form>
 
 <script>
@@ -82,7 +84,7 @@
 
         // Проверка на совпадение паролей
         if (password !== confirmPassword) {
-            alert("Passwords do not match. Please check and try again.");
+
             return;
         }
 
@@ -112,15 +114,15 @@
             if (response.ok) {
                 const responseData = await response.json();
                 console.log(responseData);
-                alert("User registered successfully!");
+
                 // Перенаправление на страницу входа после успешной регистрации
                 window.location.href = '/account/login';
             } else {
-                alert("Failed to register user. Please check the provided information.");
+
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("An error occurred while registering the user.");
+
         }
     }
 </script>

@@ -33,14 +33,6 @@ user = Table(
 
 
 
-notification = Table(
-    'notification',
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("user_id", Integer, ForeignKey("user.id"), index=True),
-    Column("product_id", Integer, ForeignKey("product.id"), index=True),
-    Column("created_at", TIMESTAMP, default=datetime.utcnow),
-)
 
 item = Table(
     'item',
@@ -56,12 +48,6 @@ item = Table(
     Column("photo_url", String, nullable=False),
 
 )
-
-# crud/models.py
-from sqlalchemy import Column, Integer, String
-
-
-
 
 
 product = Table(
@@ -79,21 +65,17 @@ product = Table(
 
 )
 
-notified_users = Table(
-    'notified_users',
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("user_id", Integer, ForeignKey('user.id')),
-    Column("product_id", Integer, ForeignKey('product.id')),
-
-)
-
 
 order = Table(
     'order',
     metadata,
     Column("id", Integer, primary_key=True),
+    Column("user_id", Integer, ForeignKey('user.id'), nullable=False),
     Column("order_name", String),
     Column("status", String),
-
+    Column("delivery_type", String),
+    Column("delivery_location", String),
+    Column("payment_method", String),
+    Column("delivery_date", TIMESTAMP),
+    Column("created_at", TIMESTAMP, default=datetime.utcnow),
 )

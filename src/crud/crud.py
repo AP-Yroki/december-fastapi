@@ -8,8 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy.sql import select
 from auth import schemas
-from auth.models import product, \
-    notification, notified_users  # Замените на свое название модели
+from auth.models import product
 from auth.schemas import ProductCreate, ProductUpdate
 
 

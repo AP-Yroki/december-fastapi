@@ -73,26 +73,6 @@ class CartItem(BaseModel):
 
 cart_items = {}
 
-@app.post("/api/cart/add/{product_id}")
-def add_to_cart(product_id: int, item: CartItem):
-    # Здесь должна быть логика добавления товара в корзину
-    # Например, обновление словаря cart_items
-    if product_id in cart_items:
-        cart_items[product_id]['quantity'] += item.quantity
-    else:
-        cart_items[product_id] = {'product_id': product_id, 'quantity': item.quantity}
-
-    # Верните подтверждение успешного добавления товара
-    return {"message": "Товар успешно добавлен в корзину"}
-
-@app.get("/api/cart")
-def view_cart():
-    # Здесь должна быть логика получения данных о корзине пользователя
-    # Например, извлечение данных из словаря cart_items
-    return cart_items
-
-
-
 def get_db():
     db = sessionlocal()
     try:

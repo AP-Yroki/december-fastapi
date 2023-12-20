@@ -5,6 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <title>Авторизация</title>
     <style>
         body {
@@ -21,9 +22,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            text-align: center;
-        }
+
 
         .alert {
             margin-bottom: 10px;
@@ -61,19 +60,19 @@
     </style>
 </head>
 <body>
-         <a href="/" class="btn btn-primary">Вернуться на главное меню</a>
+         <a href="/" class="btn btn-primary ml-5 mt-3">Вернуться на главное меню</a>
 <div class="container">
     <h1 class="text-center">Вход в аккаунт</h1>
-    <form id="loginForm" action="http://127.0.0.1:8000/home">
+    <form id="loginForm" class="align-items-center text-center" action="http://127.0.0.1:8000/home">
         <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+            <label for="email" class="form-label">Почта:</label><br>
             <input type="text" required class="form-control" id="email" name="email" aria-describedby="emailHelp">
         </div>
         <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label for="password" class="form-label">Пароль:</label><br>
             <input type="password" required class="form-control" id="password" name="password">
         </div>
-        <button type="button" class="btn btn-primary" onclick="loginUser()">Login</button>
+        <button type="button" class="btn btn-primary" onclick="loginUser()">Войти</button>
     </form>
 </div>
 
@@ -101,7 +100,7 @@
                     console.log(JSON.parse(responseData));
                 }
 
-                alert("User logged in successfully!");
+                
 
                 // Добавим небольшую задержку перед перенаправлением
                 setTimeout(() => {
@@ -117,5 +116,6 @@
         }
     }
 </script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
