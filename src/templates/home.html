@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TEST</title>
+    <title>OnlineShop</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
             .container {
@@ -296,10 +296,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-    <!--Изменение товара-->
+    <!-- Изменение товара -->
     <script>
         async function submitEditForm(productId) {
-            const url = http://127.0.0.1:8000/products/update/${productId};
+            const url = `/products/update/${productId}`;
             const formData = {
                 product_name: document.getElementById('product_name').value,
                 tech_type: document.getElementById('tech_type').value,
@@ -324,17 +324,18 @@
                 if (response.ok) {
                     const responseData = await response.json();
                     console.log(responseData);
-                    alert("Изменения успешно сохранены!");
-                    location.reload(); // Пример: обновление всей страницы
+                    alert('Товар успешно изменен!');
+                    location.reload();
                 } else {
                     const errorText = await response.text();
-                    console.error("Failed to save changes. Server response:", errorText);
+                    console.error('Failed to update product. Server response:', errorText);
                 }
             } catch (error) {
-                console.error("Error:", error);
+                console.error('Error:', error);
             }
         }
     </script>
+
 
 <!--Добавление товара-->
 <script>
@@ -627,10 +628,6 @@
             saveOrderToStorage(); // Сохраняем обновленную информацию о заказе в localStorage
         }
     </script>
-
-
-
-
 
 
 
